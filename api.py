@@ -72,8 +72,6 @@ def get_news():
         return f'Read {article["title"]} at {article[url]}'
 
 
-    # Add commas to Bitcoin price
-    #bitcoin_price_str = locale.format_string('%.2f', bitcoin_price, grouping=True)
 
 def send_sms(msg,number):
     client.messages.create(to=number, from_=twilio_number, body=msg)
