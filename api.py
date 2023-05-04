@@ -1,6 +1,5 @@
 import requests
 from twilio.rest import Client
-import time
 import locale
 from datetime import datetime, timedelta
 import json
@@ -20,14 +19,9 @@ locale.setlocale(locale.LC_ALL, '')
 
 def current_price():
     # Retrieve the current Bitcoin price
-    cmc_api_key = '5f721d00-e7fc-4355-b81c-4cc89248b283'
-    cmc_url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-    cmc_params = {'symbol': 'BTC'}
-    cmc_headers = {'X-CMC_PRO_API_KEY': cmc_api_key}
-
-    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params)
-    cmc_response.raise_for_status()
-    return round(float(cmc_response.json()['data']['BTC']['quote']['USD']['price']), 2)
+    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params).json()
+    return round(float(cmc_response['data']['BTC']['quote']['USD']['price']), 2)
+    
 
 
 def prev_change():
@@ -44,8 +38,8 @@ def prev_change():
     # Calculate percentage change from previous day
     price_change = current_price() - prev_bitcoin_price
     price_change_pct = (price_change / prev_bitcoin_price) * 100
-    price_change_dir = '⬆️' if price_change >= 0 else '⬇️'
-    return f'{price_change_dir} {abs(price_change_pct):.2f}%'
+    price_change_dir = '⬆️ ' if price_change >= 0 else '⬇️ '
+    return  f'{price_change_dir} {abs(price_change_pct):.2f}'
 
 
 def get_news():
@@ -73,12 +67,8 @@ def get_news():
 
 
 
-def send_sms(msg,number='+18575593099'):
-    # Set up the Twilio API
-    account_sid = 'AC10cf754a5cfdfc2fcdf13a7322029c51'
-    auth_token = '5c89a780cf667a56bb46f9a7ba28df85'
-    client = Client(account_sid, auth_token)
-    twilio_number = '+18449865296'
+    # Add commas to Bitcoin price
+    #bitcoin_price_str = locale.format_string('%.2f', bitcoin_price, grouping=True)
 
     client.messages.create(to=number, from_=twilio_number, body=msg)
 
@@ -117,6 +107,4 @@ def add_commas(number):
 
 #print(current_price())
 
-#send_sms(f'Bitcoin: {prev_change()} at {add_commas(current_price())} Read {get_news()}')
 
-#print(get_news())
