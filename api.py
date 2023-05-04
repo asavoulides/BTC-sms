@@ -1,6 +1,5 @@
 import requests
 from twilio.rest import Client
-import time
 import locale
 from datetime import datetime, timedelta
 import json
@@ -30,10 +29,15 @@ locale.setlocale(locale.LC_ALL, '')
 
 def current_price():
     # Retrieve the current Bitcoin price
-    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params).json()
-    return round(float(cmc_response['data']['BTC']['quote']['USD']['price']), 2)
+    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params)
+    if cmc_response.status_code == 200:
+        cmc_response.json()
+        return round(float(cmc_response['data']['BTC']['quote']['USD']['price']), 2)
+    else:
+        return None
     
-
+x = requests.get('https://w3schools.com')
+print(x.status_code)
 
 def prev_change():
     url = 'https://api.coinbase.com/v2/prices/BTC-USD/spot'
@@ -50,6 +54,7 @@ def prev_change():
     price_change = current_price() - prev_bitcoin_price
     price_change_pct = (price_change / prev_bitcoin_price) * 100
     price_change_dir = '⬆️ ' if price_change >= 0 else '⬇️ '
+    
     return  f'{price_change_dir} {abs(price_change_pct):.2f}'
 
 
@@ -110,4 +115,5 @@ def add_commas(number):
     return final_string
 
 
-
+if __name__ == "__main__":
+    print(current_price())
