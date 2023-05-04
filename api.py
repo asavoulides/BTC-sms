@@ -7,20 +7,10 @@ import json
 
 
 # Set up the CoinMarketCap API
-cmc_api_key = '5f721d00-e7fc-4355-b81c-4cc89248b283'
-cmc_url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-cmc_params = {'symbol': 'BTC'}
-cmc_headers = {'X-CMC_PRO_API_KEY': cmc_api_key}
 
 # Set up the News API
 news_api_key = '3982781f3a644c7892bcdef212ff5b6f'
 
-# Set up the Twilio API
-account_sid = 'AC10cf754a5cfdfc2fcdf13a7322029c51'
-auth_token = 'ae4c33c4ba5be793e2d01f654107350b'
-client = Client(account_sid, auth_token)
-twilio_number = '+18449865296'
-my_number = '+18575593099'
 
 
 # Set the locale for the current system
@@ -30,9 +20,14 @@ locale.setlocale(locale.LC_ALL, '')
 
 def current_price():
     # Retrieve the current Bitcoin price
-    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params).json()
-    return round(float(cmc_response['data']['BTC']['quote']['USD']['price']), 2)
-    
+    cmc_api_key = '5f721d00-e7fc-4355-b81c-4cc89248b283'
+    cmc_url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+    cmc_params = {'symbol': 'BTC'}
+    cmc_headers = {'X-CMC_PRO_API_KEY': cmc_api_key}
+
+    cmc_response = requests.get(cmc_url, headers=cmc_headers, params=cmc_params)
+    cmc_response.raise_for_status()
+    return round(float(cmc_response.json()['data']['BTC']['quote']['USD']['price']), 2)
 
 
 def prev_change():
@@ -49,13 +44,14 @@ def prev_change():
     # Calculate percentage change from previous day
     price_change = current_price() - prev_bitcoin_price
     price_change_pct = (price_change / prev_bitcoin_price) * 100
-    price_change_dir = '⬆️ ' if price_change >= 0 else '⬇️ '
-    return  f'{price_change_dir} {abs(price_change_pct):.2f}'
+    price_change_dir = '⬆️' if price_change >= 0 else '⬇️'
+    return f'{price_change_dir} {abs(price_change_pct):.2f}%'
 
 
 def get_news():
+    global news_api_key
     # Retrieve top Bitcoin news headline
-    url = f"https://newsapi.org/v2/everything?q=bitcoin&sortBy=publishedAt&apiKey={news_api_key}"
+    url = f"https://newsapi.org/v2/everything?q=bitcoin&language=en&sortBy=popularity&apiKey={news_api_key}"
 
     # send a request to the API
     response = requests.get(url)
@@ -66,16 +62,24 @@ def get_news():
     # check if the response contains any articles
     if data["totalResults"] == 0:
         print("No articles found.")
+        return 
     else:
-        # print the headline and source of the first article
+        # print the headline and description of the first article
         article = data["articles"][0]
-        return f'Read {article["title"]} at {article[url]}'
+        title = article["title"]
+        description = article["description"]
+        source = article["url"]
+    return f'{title} ⭐ {description}'
 
 
-    # Add commas to Bitcoin price
-    #bitcoin_price_str = locale.format_string('%.2f', bitcoin_price, grouping=True)
 
-def send_sms(msg,number):
+def send_sms(msg,number='+18575593099'):
+    # Set up the Twilio API
+    account_sid = 'AC10cf754a5cfdfc2fcdf13a7322029c51'
+    auth_token = '5c89a780cf667a56bb46f9a7ba28df85'
+    client = Client(account_sid, auth_token)
+    twilio_number = '+18449865296'
+
     client.messages.create(to=number, from_=twilio_number, body=msg)
 
 
@@ -111,5 +115,8 @@ def add_commas(number):
     # Return the final string
     return final_string
 
+#print(current_price())
 
+#send_sms(f'Bitcoin: {prev_change()} at {add_commas(current_price())} Read {get_news()}')
 
+#print(get_news())
