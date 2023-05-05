@@ -24,7 +24,7 @@ my_number = '+18575593099'
 
 # Set the locale for the current system
 locale.setlocale(locale.LC_ALL, '')
-
+ 
 #Defining Variables
 
 def current_price():
