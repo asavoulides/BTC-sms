@@ -3,11 +3,9 @@ import schedule
 import time 
 
 def run():
-    print("hello world")
+    api.send_sms(f'⭐ Bitcoin: {api.prev_change()} at {api.add_commas(api.current_price())}' )
+    api.send_sms(f'⭐ {api.get_news()}')
 
+run()
+#schedule.every().day.at("14:25").do(run)
 
-schedule.every().day.at("18:30").do(run)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
