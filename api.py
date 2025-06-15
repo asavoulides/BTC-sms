@@ -31,7 +31,7 @@ def current_price():
     global current_price
     global currentPriceCode
     # Retrieve the current Bitcoin price
-    cmc_api_key = '5f721d00-e7fc-4355-b81c-4cc89248b283'
+    cmc_api_key = 'YOUR API KEY'
     cmc_url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
     cmc_params = {'symbol': 'BTC'}
     cmc_headers = {'X-CMC_PRO_API_KEY': cmc_api_key}
