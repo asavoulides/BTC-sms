@@ -8,7 +8,7 @@ import json
 # Set up the CoinMarketCap API
 
 # Set up the News API
-news_api_key = '3982781f3a644c7892bcdef212ff5b6f'
+news_api_key = 'YOUR API KEY'
 
 
 
